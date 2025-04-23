@@ -1,10 +1,21 @@
+terraform {
+  required_version = ">= 1.3.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 provider "aws" {
-  region  = "us-east-1" # adapte à ta région
-  profile = "default"   # adapte à ton profil AWS
+  region  = "us-east-1"
+  profile = "default"
 }
 
 resource "aws_s3_bucket" "example" {
-  bucket = "nico-s3-example-bucket-123456" # doit être globalement unique
+  bucket = "nico-s3-example-bucket-123456"
 
   tags = {
     Name        = "Example S3 Bucket"
