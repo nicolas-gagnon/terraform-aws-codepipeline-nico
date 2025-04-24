@@ -1,7 +1,7 @@
 
 
 resource "aws_s3_bucket" "pipeline_artifacts" {
-  bucket        = "eks-pipeline-artifacts-${random_id.bucket_suffix.hex}"
+  bucket        = "eks-pipeline-artifacts-nicolas-gagnon"
   force_destroy = true
 }
 
