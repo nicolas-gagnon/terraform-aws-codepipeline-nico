@@ -1,7 +1,6 @@
 
-
 resource "aws_s3_bucket" "pipeline_artifacts" {
-  bucket        = "eks-pipeline-artifacts-nicolas-gagnon"
+  bucket        = "eks-pipeline-artifacts-nico"
   force_destroy = true
 }
 
@@ -42,7 +41,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       output_artifacts = ["build_output"]
       version          = "1"
       configuration = {
-        ProjectName = "build"
+        ProjectName = aws_codebuild_project.build.name
       }
     }
   }
@@ -58,7 +57,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       output_artifacts = ["scan_output"]
       version          = "1"
       configuration = {
-        ProjectName = "scan"
+        ProjectName = aws_codebuild_project.scan.name
       }
     }
   }
@@ -73,7 +72,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       input_artifacts = ["scan_output"]
       version         = "1"
       configuration = {
-        ProjectName = "deploy"
+        ProjectName = aws_codebuild_project.deploy.name
       }
     }
   }
@@ -84,4 +83,72 @@ resource "aws_ecr_repository" "app_repo" {
     scan_on_push = true
   }
   image_tag_mutability = "MUTABLE"
+}
+resource "aws_codebuild_project" "build" {
+  name         = "build"
+  description  = "Build and push Docker image to ECR"
+  service_role = "arn:aws:iam::247084108338:role/terraformpipe-codebuild-execution"
+
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  environment {
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:7.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true
+
+  }
+
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = "buildspecs/buildspec_build.yml"
+  }
+}
+
+resource "aws_codebuild_project" "scan" {
+  name         = "scan"
+  description  = "Scan image with Trivy"
+  service_role = "arn:aws:iam::247084108338:role/terraformpipe-codebuild-execution"
+
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  environment {
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:7.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true
+
+  }
+
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = "buildspecs/buildspec_scan.yml"
+  }
+}
+
+resource "aws_codebuild_project" "deploy" {
+  name         = "deploy"
+  description  = "Deploy image to EKS with Helm"
+  service_role = "arn:aws:iam::247084108338:role/terraformpipe-codebuild-execution"
+
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  environment {
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:7.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true
+
+  }
+
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = "buildspecs/buildspec_deploy.yml"
+  }
 }
