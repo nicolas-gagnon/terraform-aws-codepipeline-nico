@@ -2,9 +2,9 @@ terraform {
   required_version = ">= 1.3.0"
 
   backend "s3" {
-    bucket         = "nico-s3-example-bucket-123456"
-    key            = "envs/prod/terraform.tfstate"
-    region         = "us-east-1"       
+    bucket = "nico-s3-example-bucket-123456"
+    key    = "envs/prod/terraform.tfstate"
+    region = "us-east-1"
   }
 
   required_providers {
