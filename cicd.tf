@@ -44,7 +44,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       output_artifacts = ["build_output"]
       version          = "1"
       configuration = {
-        ProjectName = aws_codebuild_project.build.name
+        ProjectName = "build"
       }
     }
   }
@@ -60,7 +60,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       output_artifacts = ["scan_output"]
       version          = "1"
       configuration = {
-        ProjectName = aws_codebuild_project.scan.name
+        ProjectName = "scan"
       }
     }
   }
@@ -75,7 +75,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       input_artifacts = ["scan_output"]
       version         = "1"
       configuration = {
-        ProjectName = aws_codebuild_project.deploy.name
+        ProjectName = "deploy"
       }
     }
   }
