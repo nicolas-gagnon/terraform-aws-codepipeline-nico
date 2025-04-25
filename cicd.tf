@@ -25,7 +25,7 @@ resource "aws_codepipeline" "eks_pipeline" {
       configuration = {
         ConnectionArn    = "arn:aws:codeconnections:us-east-1:247084108338:connection/fb47638b-04c0-4139-8adc-792e380ab021"
         FullRepositoryId = "nicolas-gagnon/eks-pipeline-app"
-        BranchName       = "DEV"
+        BranchName       = "main"
       }
     }
   }
